@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp">
+
+    <LinearLayout
+        android:id="@+id/tableRow1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/etScan"
+            android:layout_alignTop="@+id/etScan"
+            android:layout_gravity="center"
+            android:layout_marginRight="5dp"
+            android:text="商品条码" />
+
+        <EditText
+            android:id="@+id/et_prod_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:background="#EDEDED" />
+        <!--android:background="@drawable/edit_border"-->
+        <ImageView
+            android:id="@+id/im_scan_prod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/etScan"
+
+            android:layout_alignTop="@+id/etScan"
+            android:layout_gravity="center"
+            android:layout_toRightOf="@+id/etScan"
+            android:background="@mipmap/android_search_button_icon"
+            android:gravity="center_horizontal" />
+    </LinearLayout>
+    />
+
+    <LinearLayout
+        android:id="@+id/tableRow2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableRow1"
+        android:background="@drawable/liearborder">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:height="50px"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="注意 相同商品（扫描一次），扫描封装多个魔盒" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/tableRow3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableRow2"
+        android:background="#ffffff"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/etScan"
+            android:layout_alignTop="@+id/etScan"
+            android:layout_marginRight="5dp"
+            android:gravity="center_vertical"
+            android:text="魔盒条码" />
+
+        <EditText
+            android:id="@+id/et_box_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:background="#EDEDED" />
+        <!--android:background="@drawable/edit_border"-->
+        <ImageView
+            android:id="@+id/im_scan_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/etScan"
+            android:layout_alignTop="@+id/etScan"
+            android:layout_gravity="center"
+            android:layout_toRightOf="@+id/etScan"
+            android:background="@mipmap/android_search_button_icon"
+            android:gravity="center_horizontal" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/tableRow4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tableRow3"
+        android:background="@drawable/edit_border">
+
+        <TextView
+            android:id="@+id/code"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="5"
+            android:gravity="center"
+            android:text="NO" />
+
+        <TextView
+            android:id="@+id/good"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="3"
+            android:background="@drawable/text_border"
+            android:gravity="center"
+            android:text="商品条码" />
+
+        <TextView
+
+            android:id="@+id/boxscan"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="3"
+            android:gravity="center"
+
+            android:text="魔盒条码" />
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_bod_prod"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tableRow5"
+        android:layout_below="@+id/tableRow4"
+        android:divider="#cccccc"
+        android:scrollbars="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <LinearLayout
+        android:id="@+id/tableRow5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tableRow6"
+        android:background="#ffffff"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="扫描数" />
+
+        <TextView
+            android:id="@+id/scan_qty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="left" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="包装员" />
+
+        <TextView
+            android:id="@+id/user_code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:text="w0001" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/tableRow6"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tableRow7"
+        android:background="#ffffff"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/etScan"
+            android:layout_alignTop="@+id/etScan"
+            android:layout_marginRight="5dp"
+            android:gravity="center_vertical"
+            android:text="分拣单编码" />
+
+        <EditText
+            android:id="@+id/et_pkn_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:background="#EDEDED" />
+        <!--android:background="@drawable/edit_border"-->
+        <ImageView
+            android:id="@+id/im_scan_pkn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/etScan"
+            android:layout_alignTop="@+id/etScan"
+            android:layout_gravity="center"
+            android:layout_toRightOf="@+id/etScan"
+            android:background="@mipmap/android_search_button_icon"
+            android:gravity="center_horizontal" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/tableRow7"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="#ffffff"
+        android:gravity="center_vertical"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="2" />
+
+        <Button
+            android:id="@+id/btn_pack_submit"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.5"
+            android:background="@drawable/button"
+            android:text="分拣包装完毕"
+            android:textColor="#ffff" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="2" />
+    </LinearLayout>
+
+</RelativeLayout>
