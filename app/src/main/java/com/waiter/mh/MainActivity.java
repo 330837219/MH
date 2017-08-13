@@ -121,7 +121,11 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_logout) {
+            mEditor.clear(); //清除保存在SharedPreferences里的账号密码信息,并跳转到登陆界面
+            mEditor.commit();
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            finish();
             return true;
         }
 
