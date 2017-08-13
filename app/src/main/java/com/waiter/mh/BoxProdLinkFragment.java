@@ -150,7 +150,6 @@ public class BoxProdLinkFragment extends Fragment implements View.OnClickListene
         @Override
         public void onItemClick(View view, int position) {
             showDeleteDialog(position);//删除选中行
-            mScanQty.setText(Integer.parseInt(mScanQty.getText().toString()) - 1);//扫描数-1
         }
     };
 
@@ -168,6 +167,7 @@ public class BoxProdLinkFragment extends Fragment implements View.OnClickListene
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mAdapter.removeItem(position);
+                mScanQty.setText(Integer.toString(mAdapter.getItemCount()));//设置扫描数
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -214,11 +214,11 @@ public class BoxProdLinkFragment extends Fragment implements View.OnClickListene
         if (prodLst == null || prodLst.size() <= 0) {
             return;
         }
-        if(TextUtils.isEmpty(mUserCode.getText())){
+        if (TextUtils.isEmpty(mUserCode.getText())) {
             Toast.makeText(getActivity(), "操作人员不能为空", Toast.LENGTH_SHORT).show();
             return;
         }
-        if(TextUtils.isEmpty(mPknCode.getText())){
+        if (TextUtils.isEmpty(mPknCode.getText())) {
             Toast.makeText(getActivity(), "分拣单编号不能为空", Toast.LENGTH_SHORT).show();
             return;
         }

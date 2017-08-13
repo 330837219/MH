@@ -26,6 +26,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -199,6 +200,7 @@ public class MainActivity extends AppCompatActivity
                 ResponseInfo<AppVersionInfo> response = new Gson().fromJson(result, type);//Json转成对象
                 //存在新版本发布
                 if (response != null && response.getStatus().equals(Config.STATUS_SUCCESS)
+                        && response.getDatas() != null && response.getDatas().get(0) != null
                         && response.getDatas().get(0).getVERSION_CODE() > getVersionCode()) {
                     showUpdateDialog(response.getDatas().get(0));
                 }

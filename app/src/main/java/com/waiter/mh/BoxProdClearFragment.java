@@ -47,7 +47,7 @@ public class BoxProdClearFragment extends Fragment implements View.OnClickListen
     EditText mBoxCode, mWarehCode;//盒子编码，网点编码
     RecyclerView mRecyclerView;
     BoxProdAdapter mAdapter;
-    TextView mScanQty, mUserCode;//扫描数，操作员
+    TextView mScanQty, mUserCode, mWareh;//扫描数，操作员
     LinearLayoutManager mLayoutManager;
     SharedPreferences mPreferences;
     ImageView mScanBox, mScanWareh;//盒子条码，网点编码右边的相机图片
@@ -82,7 +82,6 @@ public class BoxProdClearFragment extends Fragment implements View.OnClickListen
         mWarehCode = (EditText) getActivity().findViewById(R.id.et_wareh_code);
         mScanQty = (TextView) getActivity().findViewById(R.id.scan_qty);
         mUserCode = (TextView) getActivity().findViewById(R.id.user_code);
-
         mScanBox = (ImageView) getActivity().findViewById(R.id.im_scan_box);
         mScanWareh = (ImageView) getActivity().findViewById(R.id.im_scan_wareh);
         mBtnSubmit = (Button) getActivity().findViewById(R.id.btn_submit);
@@ -96,6 +95,8 @@ public class BoxProdClearFragment extends Fragment implements View.OnClickListen
         mRecyclerView.setAdapter(mAdapter);
         mPreferences = getActivity().getSharedPreferences(Config.ACCOUNT_PASSWORD, getActivity().MODE_PRIVATE);
         mUserCode.setText(mPreferences.getString(Config.USER_CODE, null));
+        mWareh = (TextView) getActivity().findViewById(R.id.tx_wareh);
+        mWareh.setText("仓库编码");//清空盒子界面这里需要显示仓库编码
         //绑定点击事件
         mScanBox.setOnClickListener(this);
         mScanWareh.setOnClickListener(this);
@@ -135,7 +136,7 @@ public class BoxProdClearFragment extends Fragment implements View.OnClickListen
         }
         String warehCode = mWarehCode.getText().toString();
         if (TextUtils.isEmpty(warehCode)) {
-            Toast.makeText(getActivity(), "操作人员不能为空", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "仓库编号不能为空", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -189,7 +190,7 @@ public class BoxProdClearFragment extends Fragment implements View.OnClickListen
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mAdapter.removeItem(position);
-                mScanQty.setText(Integer.parseInt(mScanQty.getText().toString()) - 1);//扫描数-1
+                mScanQty.setText(Integer.toString(mAdapter.getItemCount()));//设置扫描数
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {

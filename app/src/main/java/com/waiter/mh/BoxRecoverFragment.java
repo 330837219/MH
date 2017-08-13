@@ -135,7 +135,7 @@ public class BoxRecoverFragment extends Fragment implements View.OnClickListener
         }
         String warehCode = mWarehCode.getText().toString();
         if (TextUtils.isEmpty(warehCode)) {
-            Toast.makeText(getActivity(), "操作人员不能为空", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "网点编号不能为空", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -198,7 +198,7 @@ public class BoxRecoverFragment extends Fragment implements View.OnClickListener
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mAdapter.removeItem(position);
-                mScanQty.setText(Integer.parseInt(mScanQty.getText().toString()) - 1);//扫描数-1
+                mScanQty.setText(Integer.toString(mAdapter.getItemCount()));//设置扫描数
             }
         });
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
