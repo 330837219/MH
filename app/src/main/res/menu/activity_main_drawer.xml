@@ -20,16 +20,16 @@
             android:title="盒子-商品清空" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="盘点">
         <menu>
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:title="盒子盘点" />
             <item
                 android:id="@+id/nav_send"
                 android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:title="商品盘点" />
         </menu>
     </item>
 
