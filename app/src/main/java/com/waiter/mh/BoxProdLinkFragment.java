@@ -1,5 +1,6 @@
 package com.waiter.mh;
 
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -68,7 +69,7 @@ public class BoxProdLinkFragment extends Fragment implements View.OnClickListene
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_box_prod_link, container, false);
         //注册广播
-        IntentFilter intentFilter = new IntentFilter("com.waiter.mh.action.SCAN_CODE_BROADCAST");
+        IntentFilter intentFilter = new IntentFilter(Config.SCAN_ACTION);
         getActivity().registerReceiver(receiver, intentFilter);
         return view;
     }
@@ -86,12 +87,12 @@ public class BoxProdLinkFragment extends Fragment implements View.OnClickListene
         mScanBox = (ImageView) getActivity().findViewById(R.id.im_scan_box);
         mScanPkn = (ImageView) getActivity().findViewById(R.id.im_scan_pkn);
         mPackSubmit = (Button) getActivity().findViewById(R.id.btn_pack_submit);
-        mRecyclerView = (RecyclerView) getActivity().findViewById(R.id.rv_bod_prod);
+        mRecyclerView = (RecyclerView) getActivity().findViewById(R.id.rv_box_prod);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mAdapter = new BoxProdAdapter(getActivity());
+        mAdapter = new BoxProdAdapter(getActivity(), 1);
         mAdapter.setOnItemClickListener(mOnItemClickListener);
         mRecyclerView.setAdapter(mAdapter);
         mPreferences = getActivity().getSharedPreferences(Config.ACCOUNT_PASSWORD, getActivity().MODE_PRIVATE);
@@ -149,6 +150,7 @@ public class BoxProdLinkFragment extends Fragment implements View.OnClickListene
         @Override
         public void onItemClick(View view, int position) {
             showDeleteDialog(position);//删除选中行
+            mScanQty.setText(Integer.parseInt(mScanQty.getText().toString()) - 1);//扫描数-1
         }
     };
 
@@ -182,21 +184,21 @@ public class BoxProdLinkFragment extends Fragment implements View.OnClickListene
     public void onClick(View v) {
 
         switch (v.getId()) {
-            case R.id.im_scan_prod://商品条码右边的相机图片给点击了
+            case R.id.im_scan_prod://商品条码右边的相机图片给点击了,扫描一次返回结果
                 mProdCode.requestFocus();//焦点设置到它
-                startActivity(new Intent(getActivity(), ScanActivity.class).putExtra(Config.START_SCAN, Config.IMAGE_SCAN_PROD));
+                startActivity(new Intent(getActivity(), ScanActivity.class).putExtra(Config.START_SCAN, Config.ONCE_SCAN));
                 break;
-            case R.id.im_scan_box://盒子条码右边的相机图片给点击了
+            case R.id.im_scan_box://盒子条码右边的相机图片给点击了,连续扫描
                 if (TextUtils.isEmpty(mProdCode.getText())) {
                     Toast.makeText(getActivity(), "请先扫描商品编码", Toast.LENGTH_SHORT).show();
                     break;
                 }
                 mBoxCode.requestFocus();//焦点设置到它
-                startActivity(new Intent(getActivity(), ScanActivity.class).putExtra(Config.START_SCAN, Config.IMAGE_SCAN_BOX));
+                startActivity(new Intent(getActivity(), ScanActivity.class).putExtra(Config.START_SCAN, Config.CONTINUOUS_SCAN));
                 break;
-            case R.id.im_scan_pkn://分拣单右边的相机图片给点击了
+            case R.id.im_scan_pkn://分拣单右边的相机图片给点击了,扫描一次返回结果
                 mPknCode.requestFocus();//焦点设置到它
-                startActivity(new Intent(getActivity(), ScanActivity.class).putExtra(Config.START_SCAN, Config.IMAGE_SCAN_PKN));
+                startActivity(new Intent(getActivity(), ScanActivity.class).putExtra(Config.START_SCAN, Config.ONCE_SCAN));
                 break;
             case R.id.btn_pack_submit://分拣包装完毕,
                 packSubmit();//提交数据到服务器
@@ -212,18 +214,29 @@ public class BoxProdLinkFragment extends Fragment implements View.OnClickListene
         if (prodLst == null || prodLst.size() <= 0) {
             return;
         }
+        if(TextUtils.isEmpty(mUserCode.getText())){
+            Toast.makeText(getActivity(), "操作人员不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(TextUtils.isEmpty(mPknCode.getText())){
+            Toast.makeText(getActivity(), "分拣单编号不能为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        //显示进度条
+        final ProgressDialog pd = ProgressDialog.show(getActivity(), "提示", getResources().getString(R.string.submit_data));
         List<RfBoxProdInfo> submitData = new ArrayList<>();
         for (BoxProdInfo prods : prodLst) {
             RfBoxProdInfo info = new RfBoxProdInfo();
             info.setBOX_CODE(prods.getBOX_CODE());
             info.setPROD_CODE(prods.getPROD_CODE());
-            info.setUSER_CODE("");
-            info.setPKN_CODE("");
+            info.setUSER_CODE(mUserCode.getText().toString());
+            info.setPKN_CODE(mPknCode.getText().toString());
             submitData.add(info);
         }
         HttpUtil.getInstance().insertBoxProd(submitData, new HttpUtil.ResultCallback() {
             @Override
             public void onResult(String str) {
+                pd.dismiss();//取消进度条
                 Type type = new TypeToken<ResponseInfo<String>>() {
                 }.getType();
                 ResponseInfo result = new Gson().fromJson(str, type);

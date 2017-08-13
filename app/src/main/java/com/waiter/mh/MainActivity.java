@@ -1,11 +1,18 @@
 package com.waiter.mh;
 
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -14,6 +21,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -22,14 +30,26 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.waiter.mh.model.AppVersionInfo;
 import com.waiter.mh.model.ResponseInfo;
 import com.waiter.mh.utils.Config;
 import com.waiter.mh.utils.HttpUtil;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Type;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -41,8 +61,15 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //从Android 7.0开始，一个应用提供自身文件给其它应用使用时，如果给出一个file://格式的URI的话，应用会抛出FileUriExposedException。
+        //置入一个不设防的VmPolicy,避免在自动更新安装的时候报错
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+            StrictMode.setVmPolicy(builder.build());
+        }
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
+        //悬浮按钮
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -64,7 +91,8 @@ public class MainActivity extends AppCompatActivity
 
         mPreferences = getSharedPreferences(Config.ACCOUNT_PASSWORD, MODE_PRIVATE);
         mEditor = mPreferences.edit();
-        autoLogin();
+        getAppVersion();//检查版本更新
+        autoLogin();//自动登录
     }
 
     @Override
@@ -140,7 +168,7 @@ public class MainActivity extends AppCompatActivity
             final String userPass = mPreferences.getString(Config.USER_PASS, null);
 
             if (!TextUtils.isEmpty(userCode) && !TextUtils.isEmpty(userPass)) {
-                HttpUtil.getInstance().Login(userCode, userPass, new HttpUtil.ResultCallback() {
+                HttpUtil.getInstance().login(userCode, userPass, new HttpUtil.ResultCallback() {
                     @Override
                     public void onResult(String result) {
                         Type type = new TypeToken<ResponseInfo<String>>() {
@@ -158,7 +186,131 @@ public class MainActivity extends AppCompatActivity
                 finish();
             }
         } else {
-            //// TODO: 2017/8/8  
+            //登录成功了
         }
+    }
+
+    private void getAppVersion() {
+        HttpUtil.getInstance().getAppVersion(getPackageName(), new HttpUtil.ResultCallback() {
+            @Override
+            public void onResult(String result) {
+                Type type = new TypeToken<ResponseInfo<AppVersionInfo>>() {
+                }.getType();
+                ResponseInfo<AppVersionInfo> response = new Gson().fromJson(result, type);//Json转成对象
+                //存在新版本发布
+                if (response != null && response.getStatus().equals(Config.STATUS_SUCCESS)
+                        && response.getDatas().get(0).getVERSION_CODE() > getVersionCode()) {
+                    showUpdateDialog(response.getDatas().get(0));
+                }
+            }
+        });
+    }
+
+    /**
+     * 获取app本地版本号
+     *
+     * @return
+     */
+    private int getVersionCode() {
+        try {
+            PackageManager packageManager = getPackageManager();
+            PackageInfo packageInfo = packageManager.getPackageInfo(
+                    getPackageName(), 0);
+            return packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    //显示进度条
+    private void showUpdateDialog(final AppVersionInfo appVersion) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setIcon(android.R.drawable.ic_dialog_info);
+        builder.setTitle("请升级APP至版本" + appVersion.getVERSION_NAME());
+        builder.setMessage(appVersion.getVERSION_DESC());
+        builder.setCancelable(false);
+
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                    downFile(appVersion.getDOWNLOAD_URL());//下载APP
+                } else {
+                    Toast.makeText(MainActivity.this, "SD卡不可用，请插入SD卡", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+
+        });
+        builder.create().show();
+    }
+
+    //下载文件
+    private void downFile(String url) {
+        final ProgressDialog mBar = new ProgressDialog(MainActivity.this);    //进度条，在下载的时候实时更新进度，提高用户友好度
+        mBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mBar.setTitle("正在下载");
+        mBar.setMessage("请稍候...");
+        mBar.setProgress(0);
+        mBar.show();
+
+        final Request request = new Request.Builder().url(url).build();
+        final Call call = new OkHttpClient().newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                mBar.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                InputStream is = null;
+                FileOutputStream fos = null;
+                try {
+                    int length = (int) response.body().contentLength();
+                    mBar.setMax(length);//设置进度条的总长度
+                    int process = 0;
+                    int len = 0;
+                    is = response.body().byteStream();
+                    File file = new File(Environment.getExternalStorageDirectory(), "mh.apk");
+                    fos = new FileOutputStream(file);
+                    byte[] buf = new byte[1024];
+                    while ((len = is.read(buf)) != -1) {
+                        fos.write(buf, 0, len);
+                        process += len;
+                        mBar.setProgress(process);       //这里就是关键的实时更新进度了！
+                    }
+                    fos.flush();
+                    mBar.cancel();
+                    installApp();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (fos != null) {
+                        fos.close();
+                    }
+                    if (is != null) {
+                        is.close();
+                    }
+                }
+            }
+        });
+    }
+
+    //安装文件，一般固定写法
+    private void installApp() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(Uri.fromFile(new File(Environment
+                        .getExternalStorageDirectory(), "mh.apk")),
+                "application/vnd.android.package-archive");
+        startActivity(intent);
     }
 }

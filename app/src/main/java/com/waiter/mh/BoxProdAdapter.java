@@ -18,18 +18,27 @@ public class BoxProdAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private ArrayList<BoxProdInfo> mDatas = new ArrayList<>();
     private OnItemClickListener mOnItemClickListener;
     private Context mContext;
+    private int mSwitchFragment;//记录时那个界面启动的扫描
 
-
-    public BoxProdAdapter(Context context) {
+    public BoxProdAdapter(Context context, int switchFragment) {
         this.mContext = context;
+        mSwitchFragment = switchFragment;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.box_prod_item, parent, false);
-//        View view = mInflater.inflate(R.layout.box_prod_item, parent, false);
-        ItemViewHolder viewHolder = new ItemViewHolder(view);
-        return viewHolder;
+        //商品盒子关联，显示的列为：行号，商品编码，盒子条码
+        if (mSwitchFragment == 1) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.box_prod_item, parent, false);
+            ItemViewHolder viewHolder = new ItemViewHolder(view);
+            return viewHolder;
+        }
+        //其他列表显示的列为：行号，盒子编码，扫描时间
+        else {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.box_item, parent, false);
+            ItemViewHolder viewHolder = new ItemViewHolder(view);
+            return viewHolder;
+        }
     }
 
     @Override
@@ -37,11 +46,15 @@ public class BoxProdAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (holder instanceof ItemViewHolder) {
             BoxProdInfo data = mDatas.get(position);
             //设置显示的数据
-            String dd = data.getBOX_CODE();
-            TextView tx = ((ItemViewHolder) holder).mBoxCode;
-            ((ItemViewHolder) holder).mLineNo.setText(Integer.toString(data.getLINE_NO()));//int类型的放入需要转换成字符串
-            ((ItemViewHolder) holder).mProdCode.setText(data.getPROD_CODE());
-            ((ItemViewHolder) holder).mBoxCode.setText(data.getBOX_CODE());
+            if (mSwitchFragment == 1) {
+                ((ItemViewHolder) holder).mLineNo.setText(Integer.toString(data.getLINE_NO()));//int类型的放入需要转换成字符串
+                ((ItemViewHolder) holder).mProdCode.setText(data.getPROD_CODE());
+                ((ItemViewHolder) holder).mBoxCode.setText(data.getBOX_CODE());
+            } else {
+                ((ItemViewHolder) holder).mLineNo.setText(Integer.toString(data.getLINE_NO()));//int类型的放入需要转换成字符串
+                ((ItemViewHolder) holder).mScanTime.setText(data.getSCAN_TIME());
+                ((ItemViewHolder) holder).mBoxCode.setText(data.getBOX_CODE());
+            }
         }
     }
 
@@ -56,7 +69,7 @@ public class BoxProdAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     /**
-     * 扫描单个添加单号，限制了添加重复单号
+     * 扫描单个添加单号，限制了添加重复盒子编码
      *
      * @param info
      */
@@ -105,15 +118,19 @@ public class BoxProdAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private TextView mProdCode;
-        private TextView mLineNo;
-        private TextView mBoxCode;
+        private TextView mProdCode, mLineNo, mBoxCode, mScanTime;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
-            mProdCode = (TextView) itemView.findViewById(R.id.tx_prod_code);
-            mLineNo = (TextView) itemView.findViewById(R.id.tx_line_no);
-            mBoxCode = (TextView) itemView.findViewById(R.id.tx_box_code);
+            if (mSwitchFragment == 1) {
+                mProdCode = (TextView) itemView.findViewById(R.id.tx_prod_code);
+                mLineNo = (TextView) itemView.findViewById(R.id.tx_line_no);
+                mBoxCode = (TextView) itemView.findViewById(R.id.tx_box_code);
+            } else {
+                mScanTime = (TextView) itemView.findViewById(R.id.tx_scan_time);
+                mLineNo = (TextView) itemView.findViewById(R.id.tx_line_no);
+                mBoxCode = (TextView) itemView.findViewById(R.id.tx_box_code);
+            }
             itemView.setOnClickListener(this);
         }
 

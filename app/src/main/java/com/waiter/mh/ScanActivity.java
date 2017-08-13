@@ -26,7 +26,7 @@ public class ScanActivity extends AppCompatActivity implements QRCodeView.Delega
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
-        switchStart = getIntent().getIntExtra(Config.START_SCAN, 0);
+        switchStart = getIntent().getIntExtra(Config.START_SCAN, 0);//获取别的界面传递过来的数据
         mQRCodeView = (ZXingView) findViewById(R.id.zxingview);
         mQRCodeView.setDelegate(this);
 //        mQRCodeView.startSpot();//默认开始扫描
@@ -72,15 +72,11 @@ public class ScanActivity extends AppCompatActivity implements QRCodeView.Delega
         sendBroadcast(intent);
 
         //盒子商品关联界面的扫描商品编号启动的扫描，只扫描一次，有结果就返回
-        if (switchStart == Config.IMAGE_SCAN_PROD) {
-            finish();
-        }
-        //盒子商品关联界面的扫描分拣单编号启动的扫描，只扫描一次，有结果就返回
-        else if (switchStart == Config.IMAGE_SCAN_PKN) {
+        if (switchStart == Config.ONCE_SCAN) {
             finish();
         }
         //盒子商品关联界面的扫描盒子编号启动的扫描，会不停的扫描多个盒子
-        else if (switchStart == Config.IMAGE_SCAN_BOX) {
+        else if (switchStart == Config.CONTINUOUS_SCAN) {
 
         }
         vibrate();

@@ -46,4 +46,35 @@ public class ResponseInfo<T> {
     public void setDatas(List<T> datas) {
         Datas = datas;
     }
+
+    @Override
+    public String toString() {
+        return "ResponseInfo{" +
+                "Status='" + Status + '\'' +
+                ", Description='" + Description + '\'' +
+                ", Datas=" + Datas +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ResponseInfo<?> that = (ResponseInfo<?>) o;
+
+        if (Status != null ? !Status.equals(that.Status) : that.Status != null) return false;
+        if (Description != null ? !Description.equals(that.Description) : that.Description != null)
+            return false;
+        return Datas != null ? Datas.equals(that.Datas) : that.Datas == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Status != null ? Status.hashCode() : 0;
+        result = 31 * result + (Description != null ? Description.hashCode() : 0);
+        result = 31 * result + (Datas != null ? Datas.hashCode() : 0);
+        return result;
+    }
 }

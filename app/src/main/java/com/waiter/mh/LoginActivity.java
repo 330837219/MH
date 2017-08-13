@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            HttpUtil.getInstance().Login(userCode, userPass, new HttpUtil.ResultCallback() {
+            HttpUtil.getInstance().login(userCode, userPass, new HttpUtil.ResultCallback() {
                 @Override
                 public void onResult(String str) {
                     showProgress(false);

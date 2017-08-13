@@ -8,68 +8,10 @@
     android:paddingRight="10dp">
 
     <LinearLayout
-        android:id="@+id/tableRow1"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="#ffffff"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingBottom="5dp"
-        android:paddingTop="5dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/etScan"
-            android:layout_alignTop="@+id/etScan"
-            android:layout_gravity="center"
-            android:layout_marginRight="5dp"
-            android:text="商品条码" />
-
-        <EditText
-            android:id="@+id/et_prod_code"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:layout_weight="1"
-            android:background="#EDEDED" />
-        <!--android:background="@drawable/edit_border"-->
-        <ImageView
-            android:id="@+id/im_scan_prod"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/etScan"
-
-            android:layout_alignTop="@+id/etScan"
-            android:layout_gravity="center"
-            android:layout_toRightOf="@+id/etScan"
-            android:background="@mipmap/android_search_button_icon"
-            android:gravity="center_horizontal" />
-    </LinearLayout>
-    />
-
-    <LinearLayout
-        android:id="@+id/tableRow2"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tableRow1"
-        android:background="@drawable/liearborder">
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:height="50px"
-            android:gravity="center_vertical|center_horizontal"
-            android:text="注意 相同商品（扫描一次），扫描封装多个魔盒" />
-
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/tableRow3"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tableRow2"
-        android:background="#ffffff"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingBottom="5dp"
@@ -90,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
             android:layout_weight="1"
-            android:background="#EDEDED" />
+            android:background="@color/editViewBackground" />
         <!--android:background="@drawable/edit_border"-->
         <ImageView
             android:id="@+id/im_scan_box"
@@ -113,7 +55,7 @@
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:layout_weight="5"
             android:gravity="center"
             android:text="NO" />
@@ -122,17 +64,16 @@
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:layout_weight="3"
-            android:background="@drawable/text_border"
             android:gravity="center"
-            android:text="商品条码" />
+            android:background="@drawable/text_border"
+            android:text="盒子条码" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:layout_weight="3"
             android:gravity="center"
-
-            android:text="魔盒条码" />
+            android:text="时间" />
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
@@ -150,7 +91,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/tableRow6"
-        android:background="#ffffff"
         android:orientation="horizontal">
 
         <TextView
@@ -165,6 +105,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+
             android:gravity="left" />
 
         <TextView
@@ -189,7 +130,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/tableRow7"
-        android:background="#ffffff"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingBottom="5dp"
@@ -202,18 +142,18 @@
             android:layout_alignTop="@+id/etScan"
             android:layout_marginRight="5dp"
             android:gravity="center_vertical"
-            android:text="分拣单编码" />
+            android:text="网点编码" />
 
         <EditText
-            android:id="@+id/et_pkn_code"
+            android:id="@+id/et_wareh_code"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
             android:layout_weight="1"
-            android:background="#EDEDED" />
+            android:background="@color/editViewBackground" />
         <!--android:background="@drawable/edit_border"-->
         <ImageView
-            android:id="@+id/im_scan_pkn"
+            android:id="@+id/im_scan_wareh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/etScan"
@@ -243,12 +183,12 @@
             android:layout_weight="2" />
 
         <Button
-            android:id="@+id/btn_pack_submit"
+            android:id="@+id/btn_submit"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="0.5"
             android:background="@drawable/button"
-            android:text="分拣包装完毕"
+            android:text="提交数据"
             android:textColor="#ffff" />
 
         <TextView

@@ -5,6 +5,7 @@ import android.os.Message;
 
 import com.google.gson.Gson;
 import com.waiter.mh.model.RfBoxProdInfo;
+import com.waiter.mh.model.BoxRequestInfo;
 
 import java.io.IOException;
 import java.util.List;
@@ -278,9 +279,29 @@ public class HttpUtil {
      * @param userPass       密码
      * @param resultCallback 回调
      */
-    public void Login(String userCode, String userPass, final ResultCallback resultCallback) {
+    public void login(String userCode, String userPass, final ResultCallback resultCallback) {
         String url = "http://115.29.165.110:8085/RfService.svc/V1.0/Mh/Login/";
         String[] params = new String[]{userCode, userPass};
+        get(url, params, new ResultCallback() {
+                    @Override
+                    public void onResult(String result) {
+                        if (resultCallback != null) {
+                            resultCallback.onResult(result);
+                        }
+                    }
+                }
+        );
+    }
+
+    /**
+     * 获取服务器新版本信息
+     *
+     * @param packageName
+     * @param resultCallback
+     */
+    public void getAppVersion(String packageName, final ResultCallback resultCallback) {
+        String url = "http://115.29.165.110:8085/RfService.svc/V1.0/Mh/GetAppVersion/";
+        String[] params = new String[]{packageName};
         get(url, params, new ResultCallback() {
                     @Override
                     public void onResult(String result) {
@@ -302,6 +323,63 @@ public class HttpUtil {
         String url = "http://115.29.165.110:8085/RfService.svc/V1.0/Mh/InsertBoxProd/";
         String jsonData = new Gson().toJson(boxProdLst);
         post(url, null, jsonData, new ResultCallback() {
+            @Override
+            public void onResult(String result) {
+                if (resultCallback != null) {
+                    resultCallback.onResult(result);
+                }
+            }
+        });
+    }
+
+    /**
+     * 盒子网点扫描上架
+     *
+     * @param boxReceiveLst  盒子网点数据
+     * @param resultCallback 回调
+     */
+    public void receiveBox(List<BoxRequestInfo> boxReceiveLst, final ResultCallback resultCallback) {
+        String url = "http://115.29.165.110:8085/RfService.svc/V1.0/Mh/ReceiveBox/";
+        String jsonData = new Gson().toJson(boxReceiveLst);
+        put(url, null, jsonData, new ResultCallback() {
+            @Override
+            public void onResult(String result) {
+                if (resultCallback != null) {
+                    resultCallback.onResult(result);
+                }
+            }
+        });
+    }
+
+    /**
+     * 盒子网点回收
+     *
+     * @param boxRecoverLst  盒子网点数据
+     * @param resultCallback 回调
+     */
+    public void recoverBox(List<BoxRequestInfo> boxRecoverLst, final ResultCallback resultCallback) {
+        String url = "http://115.29.165.110:8085/RfService.svc/V1.0/Mh/RecoverBox/";
+        String jsonData = new Gson().toJson(boxRecoverLst);
+        put(url, null, jsonData, new ResultCallback() {
+            @Override
+            public void onResult(String result) {
+                if (resultCallback != null) {
+                    resultCallback.onResult(result);
+                }
+            }
+        });
+    }
+
+    /**
+     * 清空盒子商品
+     *
+     * @param boxClearLst
+     * @param resultCallback
+     */
+    public void clearBoxProd(List<BoxRequestInfo> boxClearLst, final ResultCallback resultCallback) {
+        String url = "http://115.29.165.110:8085/RfService.svc/V1.0/Mh/ClearBoxProd/";
+        String jsonData = new Gson().toJson(boxClearLst);
+        put(url, null, jsonData, new ResultCallback() {
             @Override
             public void onResult(String result) {
                 if (resultCallback != null) {

@@ -14,7 +14,6 @@
     <string name="nav_box_receive">送达网点</string>
     <string name="nav_box_recover">网点回收</string>
     <string name="nav_box_prod_clear">清空盒子</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="submit_data">正在提交数据......</string>
 
 </resources>
