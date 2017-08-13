@@ -12,4 +12,6 @@
     <string name="nav_box_prod_clear">清空盒子</string>
     <string name="submit_data">正在提交数据......</string>
     <string name="submit">正在提交数..</string>
+    <string name="navigation_drawer_open">导航栏打开</string>
+    <string name="navigation_drawer_close">导航栏关闭</string>
 </resources>
