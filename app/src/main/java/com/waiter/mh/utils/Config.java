@@ -5,6 +5,7 @@ package com.waiter.mh.utils;
  */
 
 public class Config {
+    public static final String CONNECT_ADDRESS = "http://115.29.165.110:8085/RfService.svc/";//接口调用地址
     public static final String ACCOUNT_PASSWORD = "account_password";
     public static final String USER_CODE = "user_code";
     public static final String USER_PASS = "user_pass";
