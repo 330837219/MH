@@ -30,7 +30,7 @@ public class ScanActivity extends AppCompatActivity implements QRCodeView.Delega
         mQRCodeView = (ZXingView) findViewById(R.id.zxingview);
         mQRCodeView.setDelegate(this);
 //        mQRCodeView.startSpot();//默认开始扫描
-        mQRCodeView.startSpotDelay(500);//0.5秒延时
+        mQRCodeView.startSpotDelay(200);//0.5秒延时
     }
 
     @Override

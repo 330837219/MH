@@ -54,4 +54,12 @@
         <item name="android:paddingTop">8dp</item>
         <item name="android:paddingBottom">8dp</item>
     </style>
+
+    <style name="ToolbarPopupTheme" parent="@style/ThemeOverlay.AppCompat">
+        <item name="android:colorBackground">#3F51B5</item>
+        //设置toolBar cxq
+        <item name="overlapAnchor">false</item>
+        //设置toolBar的item不覆盖toolbar cxq
+    </style>
+
 </resources>

@@ -43,7 +43,7 @@
             android:layout_alignTop="@+id/etScan"
             android:layout_gravity="center"
             android:layout_toRightOf="@+id/etScan"
-            android:background="@mipmap/android_search_button_icon"
+            android:background="@android:drawable/ic_menu_camera"
             android:gravity="center_horizontal" />
     </LinearLayout>
     />
@@ -100,7 +100,7 @@
             android:layout_alignTop="@+id/etScan"
             android:layout_gravity="center"
             android:layout_toRightOf="@+id/etScan"
-            android:background="@mipmap/android_search_button_icon"
+            android:background="@android:drawable/ic_menu_camera"
             android:gravity="center_horizontal" />
     </LinearLayout>
 
@@ -220,7 +220,7 @@
             android:layout_alignTop="@+id/etScan"
             android:layout_gravity="center"
             android:layout_toRightOf="@+id/etScan"
-            android:background="@mipmap/android_search_button_icon"
+            android:background="@android:drawable/ic_menu_camera"
             android:gravity="center_horizontal" />
     </LinearLayout>
 
