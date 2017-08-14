@@ -150,9 +150,9 @@ public class BoxProdClearFragment extends Fragment implements View.OnClickListen
             info.setUSER_CODE(userCode);
             submitData.add(info);
         }
-        HttpUtil.getInstance().clearBoxProd(submitData, new HttpUtil.ResultCallback() {
+        HttpUtil.getInstance().clearBoxProd(submitData, new HttpUtil.SuccessCallback() {
             @Override
-            public void onResult(String str) {
+            public void onSuccess(String str) {
                 pd.dismiss();//取消进度条
                 Type type = new TypeToken<ResponseInfo<String>>() {
                 }.getType();
@@ -162,9 +162,16 @@ public class BoxProdClearFragment extends Fragment implements View.OnClickListen
                 } else if (result != null && !result.getStatus().equals(Config.STATUS_SUCCESS)) {
                     Toast.makeText(getActivity(), result.getDescription(), Toast.LENGTH_SHORT).show();//错误原因显示出来
                 } else {
+                    Toast.makeText(getActivity(), "数据提交成功", Toast.LENGTH_SHORT).show();
                     //提交成功清空界面数据
                     clearCurrentData();
                 }
+            }
+        }, new HttpUtil.FailCallback() {
+            @Override
+            public void onFail(String failMsg) {
+                pd.dismiss();//取消进度条
+                Toast.makeText(getActivity(), "提交数据异常：" + failMsg, Toast.LENGTH_SHORT).show();
             }
         });
     }

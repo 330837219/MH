@@ -175,9 +175,9 @@ public class MainActivity extends AppCompatActivity
             final String userPass = mPreferences.getString(Config.USER_PASS, null);
 
             if (!TextUtils.isEmpty(userCode) && !TextUtils.isEmpty(userPass)) {
-                HttpUtil.getInstance().login(userCode, userPass, new HttpUtil.ResultCallback() {
+                HttpUtil.getInstance().login(userCode, userPass, new HttpUtil.SuccessCallback() {
                     @Override
-                    public void onResult(String result) {
+                    public void onSuccess(String result) {
                         Type type = new TypeToken<ResponseInfo<String>>() {
                         }.getType();
                         ResponseInfo<String> response = new Gson().fromJson(result, type);//Json转成对象
@@ -185,7 +185,16 @@ public class MainActivity extends AppCompatActivity
                         if (response == null || (!response.getStatus().equals(Config.STATUS_SUCCESS))) {
                             startActivity(new Intent(MainActivity.this, LoginActivity.class));
                             finish();
+                        } else {
+                            //登录成功
                         }
+                    }
+                }, new HttpUtil.FailCallback() {
+                    @Override
+                    public void onFail(String failMsg) {
+                        Toast.makeText(MainActivity.this, "登录异常" + failMsg, Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                        finish();
                     }
                 });
             } else {
@@ -193,14 +202,15 @@ public class MainActivity extends AppCompatActivity
                 finish();
             }
         } else {
-            //登录成功了
+            //登录界面登录成功了
         }
     }
 
     private void getAppVersion() {
-        HttpUtil.getInstance().getAppVersion(getPackageName(), new HttpUtil.ResultCallback() {
+        HttpUtil.getInstance().getAppVersion(getPackageName(), new HttpUtil.SuccessCallback() {
             @Override
-            public void onResult(String result) {
+            public void onSuccess(String result) {
+
                 Type type = new TypeToken<ResponseInfo<AppVersionInfo>>() {
                 }.getType();
                 ResponseInfo<AppVersionInfo> response = new Gson().fromJson(result, type);//Json转成对象
@@ -210,6 +220,11 @@ public class MainActivity extends AppCompatActivity
                         && response.getDatas().get(0).getVERSION_CODE() > getVersionCode()) {
                     showUpdateDialog(response.getDatas().get(0));
                 }
+            }
+        }, new HttpUtil.FailCallback() {
+            @Override
+            public void onFail(String failMsg) {
+//                Toast.makeText(MainActivity.this, "获取新版本异常" + failMsg, Toast.LENGTH_SHORT).show();
             }
         });
     }

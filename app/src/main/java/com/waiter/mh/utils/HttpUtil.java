@@ -36,8 +36,12 @@ public class HttpUtil {
     }
 
     //网络通信回调接口
-    public interface ResultCallback {
-        void onResult(String result);
+    public interface SuccessCallback {
+        void onSuccess(String result);
+    }
+
+    public interface FailCallback {
+        void onFail(String failMsg);
     }
 
     /**
@@ -83,20 +87,22 @@ public class HttpUtil {
 //    }
 
     /**
-     * @param url            请求URL地址
-     * @param params         请求参数
-     * @param resultCallback 回调
+     * @param url             请求URL地址
+     * @param params          请求参数
+     * @param successCallback 回调
+     * @param failCallback    回调
      */
-    public void delete(final String url, String[] params, final ResultCallback resultCallback) {
+    public void delete(final String url, String[] params, final SuccessCallback successCallback, final FailCallback failCallback) {
         final Handler mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 switch (msg.what) {
-                    case Config.MSG_RESULT:
-                        resultCallback.onResult((String) msg.obj);
+                    case Config.MSG_SUCCESS:
+                        successCallback.onSuccess((String) msg.obj);
                         break;
                     default:
+                        failCallback.onFail((String) msg.obj);
                         break;
                 }
             }
@@ -111,31 +117,33 @@ public class HttpUtil {
             Response response = client.newCall(request).execute();
 //            boolean iss = response.isSuccessful();
             String res = response.body().string();
-            mHandler.sendMessage(mHandler.obtainMessage(Config.MSG_RESULT, res));
+            mHandler.sendMessage(mHandler.obtainMessage(Config.MSG_SUCCESS, res));
         } catch (IOException e) {
             e.printStackTrace();
-            mHandler.sendMessage(mHandler.obtainMessage(Config.MSG_RESULT, e.getMessage()));
+            mHandler.sendMessage(mHandler.obtainMessage(Config.MSG_EXCEPTION, e.getMessage()));
         }
     }
 
     /**
      * 提交POST请求
      *
-     * @param url            提交URL地址
-     * @param params         参数
-     * @param content        RequstBody数据
-     * @param resultCallback 回调
+     * @param url             提交URL地址
+     * @param params          参数
+     * @param content         RequstBody数据
+     * @param successCallback 回调
+     * @param failCallback    回调
      */
-    public void post(final String url, final String[] params, final String content, final ResultCallback resultCallback) {
+    public void post(final String url, final String[] params, final String content, final SuccessCallback successCallback, final FailCallback failCallback) {
         final Handler mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 switch (msg.what) {
-                    case Config.MSG_RESULT:
-                        resultCallback.onResult((String) msg.obj);
+                    case Config.MSG_SUCCESS:
+                        successCallback.onSuccess((String) msg.obj);
                         break;
                     default:
+                        failCallback.onFail((String) msg.obj);
                         break;
                 }
             }
@@ -164,10 +172,10 @@ public class HttpUtil {
                     Response response = client.newCall(request).execute();
 //                        boolean iss = response.isSuccessful();
                     String res = response.body().string();
-                    mHandler.sendMessage(mHandler.obtainMessage(Config.MSG_RESULT, res));
+                    mHandler.sendMessage(mHandler.obtainMessage(Config.MSG_SUCCESS, res));
                 } catch (IOException e) {
                     e.printStackTrace();
-                    mHandler.sendMessage(mHandler.obtainMessage(Config.MSG_RESULT, e.getMessage()));
+                    mHandler.sendMessage(mHandler.obtainMessage(Config.MSG_EXCEPTION, e.getMessage()));
                 }
             }
         }).start();
@@ -176,21 +184,23 @@ public class HttpUtil {
     /**
      * 提交PUT请求
      *
-     * @param url            提交URL地址
-     * @param params         参数
-     * @param content        RequstBody数据
-     * @param resultCallback 回调
+     * @param url             提交URL地址
+     * @param params          参数
+     * @param content         RequstBody数据
+     * @param successCallback 回调
+     * @param failCallback    回调
      */
-    public void put(final String url, final String[] params, final String content, final ResultCallback resultCallback) {
+    public void put(final String url, final String[] params, final String content, final SuccessCallback successCallback, final FailCallback failCallback) {
         final Handler mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 switch (msg.what) {
-                    case Config.MSG_RESULT:
-                        resultCallback.onResult((String) msg.obj);
+                    case Config.MSG_SUCCESS:
+                        successCallback.onSuccess((String) msg.obj);
                         break;
                     default:
+                        failCallback.onFail((String) msg.obj);
                         break;
                 }
             }
@@ -219,10 +229,10 @@ public class HttpUtil {
                     Response response = client.newCall(request).execute();
 //                        boolean iss = response.isSuccessful();
                     String res = response.body().string();
-                    mHandler.sendMessage(mHandler.obtainMessage(Config.MSG_RESULT, res));
+                    mHandler.sendMessage(mHandler.obtainMessage(Config.MSG_SUCCESS, res));
                 } catch (IOException e) {
                     e.printStackTrace();
-                    mHandler.sendMessage(mHandler.obtainMessage(Config.MSG_RESULT, e.getMessage()));
+                    mHandler.sendMessage(mHandler.obtainMessage(Config.MSG_EXCEPTION, e.getMessage()));
                 }
             }
         }).start();
@@ -231,21 +241,23 @@ public class HttpUtil {
     /**
      * 提交GET请求
      *
-     * @param url
-     * @param params
-     * @param resultCallback
+     * @param url             提交URL地址
+     * @param params          参数
+     * @param successCallback 回调
+     * @param failCallback    回调
      */
-    public void get(final String url, final String[] params, final ResultCallback resultCallback) {
+    public void get(final String url, final String[] params, final SuccessCallback successCallback, final FailCallback failCallback) {
 
         final Handler mHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 switch (msg.what) {
-                    case Config.MSG_RESULT:
-                        resultCallback.onResult((String) msg.obj);
+                    case Config.MSG_SUCCESS:
+                        successCallback.onSuccess((String) msg.obj);
                         break;
                     default:
+                        failCallback.onFail((String) msg.obj);
                         break;
                 }
             }
@@ -263,10 +275,10 @@ public class HttpUtil {
                 try {
                     response = client.newCall(request).execute();
 //                    boolean iss = response.isSuccessful();
-                    mHandler.sendMessage(mHandler.obtainMessage(Config.MSG_RESULT, response.body().string()));
+                    mHandler.sendMessage(mHandler.obtainMessage(Config.MSG_SUCCESS, response.body().string()));
                 } catch (IOException e) {
                     e.printStackTrace();
-                    mHandler.sendMessage(mHandler.obtainMessage(Config.MSG_RESULT, e.getMessage()));
+                    mHandler.sendMessage(mHandler.obtainMessage(Config.MSG_EXCEPTION, e.getMessage()));
                 }
             }
         }).start();
@@ -275,18 +287,26 @@ public class HttpUtil {
     /**
      * 登录方法
      *
-     * @param userCode       账号
-     * @param userPass       密码
-     * @param resultCallback 回调
+     * @param userCode        账号
+     * @param userPass        密码
+     * @param successCallback 回调
+     * @param failCallback
      */
-    public void login(String userCode, String userPass, final ResultCallback resultCallback) {
+    public void login(String userCode, String userPass, final SuccessCallback successCallback, final FailCallback failCallback) {
         String url = Config.CONNECT_ADDRESS + "V1.0/Mh/Login/";
         String[] params = new String[]{userCode, userPass};
-        get(url, params, new ResultCallback() {
+        get(url, params, new SuccessCallback() {
                     @Override
-                    public void onResult(String result) {
-                        if (resultCallback != null) {
-                            resultCallback.onResult(result);
+                    public void onSuccess(String result) {
+                        if (successCallback != null) {
+                            successCallback.onSuccess(result);
+                        }
+                    }
+                }, new FailCallback() {
+                    @Override
+                    public void onFail(String failMsg) {
+                        if (failCallback != null) {
+                            failCallback.onFail(failMsg);
                         }
                     }
                 }
@@ -296,17 +316,25 @@ public class HttpUtil {
     /**
      * 获取服务器新版本信息
      *
-     * @param packageName
-     * @param resultCallback
+     * @param packageName     包名
+     * @param successCallback
+     * @param failCallback
      */
-    public void getAppVersion(String packageName, final ResultCallback resultCallback) {
+    public void getAppVersion(String packageName, final SuccessCallback successCallback, final FailCallback failCallback) {
         String url = Config.CONNECT_ADDRESS + "V1.0/Mh/GetAppVersion/";
         String[] params = new String[]{packageName};
-        get(url, params, new ResultCallback() {
+        get(url, params, new SuccessCallback() {
                     @Override
-                    public void onResult(String result) {
-                        if (resultCallback != null) {
-                            resultCallback.onResult(result);
+                    public void onSuccess(String result) {
+                        if (successCallback != null) {
+                            successCallback.onSuccess(result);
+                        }
+                    }
+                }, new FailCallback() {
+                    @Override
+                    public void onFail(String failMsg) {
+                        if (failCallback != null) {
+                            failCallback.onFail(failMsg);
                         }
                     }
                 }
@@ -316,17 +344,25 @@ public class HttpUtil {
     /**
      * 提交盒子商品关联数据
      *
-     * @param boxProdLst     盒子商品关系数据
-     * @param resultCallback 回调
+     * @param boxProdLst      盒子商品关系数据
+     * @param successCallback 回调
+     * @param failCallback
      */
-    public void insertBoxProd(List<RfBoxProdInfo> boxProdLst, final ResultCallback resultCallback) {
+    public void insertBoxProd(List<RfBoxProdInfo> boxProdLst, final SuccessCallback successCallback, final FailCallback failCallback) {
         String url = Config.CONNECT_ADDRESS + "V1.0/Mh/InsertBoxProd/";
         String jsonData = new Gson().toJson(boxProdLst);
-        post(url, null, jsonData, new ResultCallback() {
+        post(url, null, jsonData, new SuccessCallback() {
             @Override
-            public void onResult(String result) {
-                if (resultCallback != null) {
-                    resultCallback.onResult(result);
+            public void onSuccess(String result) {
+                if (successCallback != null) {
+                    successCallback.onSuccess(result);
+                }
+            }
+        }, new FailCallback() {
+            @Override
+            public void onFail(String failMsg) {
+                if (failCallback != null) {
+                    failCallback.onFail(failMsg);
                 }
             }
         });
@@ -335,17 +371,25 @@ public class HttpUtil {
     /**
      * 盒子网点扫描上架
      *
-     * @param boxReceiveLst  盒子网点数据
-     * @param resultCallback 回调
+     * @param boxReceiveLst   盒子网点数据
+     * @param successCallback 回调
+     * @param failCallback
      */
-    public void receiveBox(List<BoxRequestInfo> boxReceiveLst, final ResultCallback resultCallback) {
+    public void receiveBox(List<BoxRequestInfo> boxReceiveLst, final SuccessCallback successCallback, final FailCallback failCallback) {
         String url = Config.CONNECT_ADDRESS + "V1.0/Mh/ReceiveBox/";
         String jsonData = new Gson().toJson(boxReceiveLst);
-        put(url, null, jsonData, new ResultCallback() {
+        put(url, null, jsonData, new SuccessCallback() {
             @Override
-            public void onResult(String result) {
-                if (resultCallback != null) {
-                    resultCallback.onResult(result);
+            public void onSuccess(String result) {
+                if (successCallback != null) {
+                    successCallback.onSuccess(result);
+                }
+            }
+        }, new FailCallback() {
+            @Override
+            public void onFail(String failMsg) {
+                if (failCallback != null) {
+                    failCallback.onFail(failMsg);
                 }
             }
         });
@@ -354,17 +398,25 @@ public class HttpUtil {
     /**
      * 盒子网点回收
      *
-     * @param boxRecoverLst  盒子网点数据
-     * @param resultCallback 回调
+     * @param boxRecoverLst   盒子网点数据
+     * @param successCallback 回调
+     * @param failCallback
      */
-    public void recoverBox(List<BoxRequestInfo> boxRecoverLst, final ResultCallback resultCallback) {
+    public void recoverBox(List<BoxRequestInfo> boxRecoverLst, final SuccessCallback successCallback, final FailCallback failCallback) {
         String url = Config.CONNECT_ADDRESS + "V1.0/Mh/RecoverBox/";
         String jsonData = new Gson().toJson(boxRecoverLst);
-        put(url, null, jsonData, new ResultCallback() {
+        put(url, null, jsonData, new SuccessCallback() {
             @Override
-            public void onResult(String result) {
-                if (resultCallback != null) {
-                    resultCallback.onResult(result);
+            public void onSuccess(String result) {
+                if (successCallback != null) {
+                    successCallback.onSuccess(result);
+                }
+            }
+        }, new FailCallback() {
+            @Override
+            public void onFail(String failMsg) {
+                if (failCallback != null) {
+                    failCallback.onFail(failMsg);
                 }
             }
         });
@@ -374,16 +426,23 @@ public class HttpUtil {
      * 清空盒子商品
      *
      * @param boxClearLst
-     * @param resultCallback
+     * @param successCallback
      */
-    public void clearBoxProd(List<BoxRequestInfo> boxClearLst, final ResultCallback resultCallback) {
+    public void clearBoxProd(List<BoxRequestInfo> boxClearLst, final SuccessCallback successCallback, final FailCallback failCallback) {
         String url = Config.CONNECT_ADDRESS + "V1.0/Mh/ClearBoxProd/";
         String jsonData = new Gson().toJson(boxClearLst);
-        put(url, null, jsonData, new ResultCallback() {
+        put(url, null, jsonData, new SuccessCallback() {
             @Override
-            public void onResult(String result) {
-                if (resultCallback != null) {
-                    resultCallback.onResult(result);
+            public void onSuccess(String result) {
+                if (successCallback != null) {
+                    successCallback.onSuccess(result);
+                }
+            }
+        }, new FailCallback() {
+            @Override
+            public void onFail(String failMsg) {
+                if (failCallback != null) {
+                    failCallback.onFail(failMsg);
                 }
             }
         });
