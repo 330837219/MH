@@ -10,8 +10,13 @@
     <string name="nav_box_receive">送达网点</string>
     <string name="nav_box_recover">网点回收</string>
     <string name="nav_box_prod_clear">清空盒子</string>
+    <string name="nav_box_Inventory">盒子盘点</string>
+    <string name="nav_Prod_Inventory">商品盘点</string>
     <string name="submit_data">正在提交数据......</string>
     <string name="submit">正在提交数..</string>
     <string name="navigation_drawer_open">导航栏打开</string>
     <string name="navigation_drawer_close">导航栏关闭</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
