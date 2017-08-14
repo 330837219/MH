@@ -1,37 +1,28 @@
 package com.waiter.mh;
 
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputEditText;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -157,8 +148,14 @@ public class MainActivity extends AppCompatActivity
             getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new BoxProdClearFragment()).commit();
             mToolbar.setTitle(R.string.nav_box_prod_clear);
         } else if (id == R.id.nav_share) {
+            //盒子盘点
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new BoxInventoryFragment()).commit();
+            mToolbar.setTitle(R.string.nav_box_Inventory);
 
         } else if (id == R.id.nav_send) {
+            //商品盘点
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new ProdInventoryFragment()).commit();
+            mToolbar.setTitle(R.string.nav_Prod_Inventory);
 
         }
 
