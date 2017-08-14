@@ -1,37 +1,28 @@
 package com.waiter.mh;
 
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputEditText;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -157,8 +148,14 @@ public class MainActivity extends AppCompatActivity
             getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new BoxProdClearFragment()).commit();
             mToolbar.setTitle(R.string.nav_box_prod_clear);
         } else if (id == R.id.nav_share) {
+            //盒子盘点
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new BoxInventoryFragment()).commit();
+            mToolbar.setTitle(R.string.nav_box_Inventory);
 
         } else if (id == R.id.nav_send) {
+            //商品盘点
+            getSupportFragmentManager().beginTransaction().replace(R.id.frame_content, new ProdInventoryFragment()).commit();
+            mToolbar.setTitle(R.string.nav_Prod_Inventory);
 
         }
 
@@ -175,9 +172,9 @@ public class MainActivity extends AppCompatActivity
             final String userPass = mPreferences.getString(Config.USER_PASS, null);
 
             if (!TextUtils.isEmpty(userCode) && !TextUtils.isEmpty(userPass)) {
-                HttpUtil.getInstance().login(userCode, userPass, new HttpUtil.ResultCallback() {
+                HttpUtil.getInstance().login(userCode, userPass, new HttpUtil.SuccessCallback() {
                     @Override
-                    public void onResult(String result) {
+                    public void onSuccess(String result) {
                         Type type = new TypeToken<ResponseInfo<String>>() {
                         }.getType();
                         ResponseInfo<String> response = new Gson().fromJson(result, type);//Json转成对象
@@ -185,7 +182,16 @@ public class MainActivity extends AppCompatActivity
                         if (response == null || (!response.getStatus().equals(Config.STATUS_SUCCESS))) {
                             startActivity(new Intent(MainActivity.this, LoginActivity.class));
                             finish();
+                        } else {
+                            //登录成功
                         }
+                    }
+                }, new HttpUtil.FailCallback() {
+                    @Override
+                    public void onFail(String failMsg) {
+                        Toast.makeText(MainActivity.this, "登录异常" + failMsg, Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                        finish();
                     }
                 });
             } else {
@@ -193,14 +199,15 @@ public class MainActivity extends AppCompatActivity
                 finish();
             }
         } else {
-            //登录成功了
+            //登录界面登录成功了
         }
     }
 
     private void getAppVersion() {
-        HttpUtil.getInstance().getAppVersion(getPackageName(), new HttpUtil.ResultCallback() {
+        HttpUtil.getInstance().getAppVersion(getPackageName(), new HttpUtil.SuccessCallback() {
             @Override
-            public void onResult(String result) {
+            public void onSuccess(String result) {
+
                 Type type = new TypeToken<ResponseInfo<AppVersionInfo>>() {
                 }.getType();
                 ResponseInfo<AppVersionInfo> response = new Gson().fromJson(result, type);//Json转成对象
@@ -210,6 +217,11 @@ public class MainActivity extends AppCompatActivity
                         && response.getDatas().get(0).getVERSION_CODE() > getVersionCode()) {
                     showUpdateDialog(response.getDatas().get(0));
                 }
+            }
+        }, new HttpUtil.FailCallback() {
+            @Override
+            public void onFail(String failMsg) {
+//                Toast.makeText(MainActivity.this, "获取新版本异常" + failMsg, Toast.LENGTH_SHORT).show();
             }
         });
     }

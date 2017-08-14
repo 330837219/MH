@@ -100,9 +100,9 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            HttpUtil.getInstance().login(userCode, userPass, new HttpUtil.ResultCallback() {
+            HttpUtil.getInstance().login(userCode, userPass, new HttpUtil.SuccessCallback() {
                 @Override
-                public void onResult(String str) {
+                public void onSuccess(String str) {
                     showProgress(false);
                     Type type = new TypeToken<ResponseInfo<String>>() {
                     }.getType();
@@ -127,6 +127,12 @@ public class LoginActivity extends AppCompatActivity {
                         //显示失败原因
                         mUserPass.requestFocus();
                     }
+                }
+            }, new HttpUtil.FailCallback() {
+                @Override
+                public void onFail(String failMsg) {
+                    showProgress(false);
+                    Toast.makeText(LoginActivity.this, "登录异常" + failMsg, Toast.LENGTH_SHORT).show();
                 }
             });
         }

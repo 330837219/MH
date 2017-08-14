@@ -63,6 +63,13 @@ public class ScanActivity extends AppCompatActivity implements QRCodeView.Delega
     public void onScanQRCodeSuccess(String result) {
 //        Log.i(TAG, "result:" + result);
 //        Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
+        //条码在连续扫描的时候会识别出来错误的结果，如果不等这结果前缀开头的条码，统统认为是错误的条码
+        if (result.startsWith(Config.BOX_PREFIX) && result.startsWith(Config.PROD_PREFIX) && result.startsWith(Config.PKN_PREFIX)
+                && result.startsWith(Config.WAREH_PREFIX)) {
+            finish();//出现错误关闭扫描界面，否则连续扫描是操作人员还以为扫上了
+        } else {
+            result=result.substring(2);//移除前面两位
+        }
         //发送广播
         Intent intent = new Intent();
         // 设置Intent的Action属性

@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -25,24 +24,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.waiter.mh.model.BoxProdInfo;
 import com.waiter.mh.model.BoxRequestInfo;
-import com.waiter.mh.model.ResponseInfo;
 import com.waiter.mh.utils.Config;
-import com.waiter.mh.utils.HttpUtil;
 
-import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 
-/**
- * 盒子网点回收
- */
-public class BoxRecoverFragment extends Fragment implements View.OnClickListener {
+public class BoxInventoryFragment extends Fragment   implements View.OnClickListener  {
 
     EditText mBoxCode, mWarehCode;//盒子编码，网点编码
     RecyclerView mRecyclerView;
@@ -50,40 +41,39 @@ public class BoxRecoverFragment extends Fragment implements View.OnClickListener
     TextView mScanQty, mUserCode;//扫描数，操作员
     LinearLayoutManager mLayoutManager;
     SharedPreferences mPreferences;
-    ImageView mScanBox, mScanWareh;//盒子条码，网点编码右边的相机图片
+    ImageView mScanProd, mScanWareh;//商品条码，网点编码右边的相机图片
     Button mBtnSubmit;//提交按钮
 
-    public BoxRecoverFragment() {
+    public BoxInventoryFragment() {
         // Required empty public constructor
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         initControls();//初始化控件
-        //注册广播
-        IntentFilter intentFilter = new IntentFilter(Config.SCAN_ACTION);
-        getActivity().registerReceiver(receiver, intentFilter);
     }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_box_recover, container, false);
+        View view = inflater.inflate(R.layout.fragment_box_inventory, container, false);
+
+        //注册广播
+        IntentFilter intentFilter = new IntentFilter(Config.SCAN_ACTION);
+        getActivity().registerReceiver(receiver, intentFilter);
+        return view;
     }
 
     /**
-     * 初始化控件
-     */
-    private void initControls() {
+    * 初始化控件
+    */
+    private void initControls(){
         mBoxCode = (EditText) getActivity().findViewById(R.id.et_box_code);
         mWarehCode = (EditText) getActivity().findViewById(R.id.et_wareh_code);
         mScanQty = (TextView) getActivity().findViewById(R.id.scan_qty);
         mUserCode = (TextView) getActivity().findViewById(R.id.user_code);
-
-        mScanBox = (ImageView) getActivity().findViewById(R.id.im_scan_box);
+        mScanProd = (ImageView) getActivity().findViewById(R.id.im_scan_box);
         mScanWareh = (ImageView) getActivity().findViewById(R.id.im_scan_wareh);
         mBtnSubmit = (Button) getActivity().findViewById(R.id.btn_submit);
         mRecyclerView = (RecyclerView) getActivity().findViewById(R.id.rv_box_prod);
@@ -91,13 +81,16 @@ public class BoxRecoverFragment extends Fragment implements View.OnClickListener
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mAdapter = new BoxProdAdapter(getActivity(), 0);
+        mAdapter = new BoxProdAdapter(getActivity(), 2);
         mAdapter.setOnItemClickListener(mOnItemClickListener);
         mRecyclerView.setAdapter(mAdapter);
         mPreferences = getActivity().getSharedPreferences(Config.ACCOUNT_PASSWORD, getActivity().MODE_PRIVATE);
         mUserCode.setText(mPreferences.getString(Config.USER_CODE, null));
+//        mProd = (TextView) getActivity().findViewById(R.id.tx_prod);
+//        mProd.setText("商品条码");//清空盒子界面这里需要显示商品编码
+
         //绑定点击事件
-        mScanBox.setOnClickListener(this);
+        mScanProd.setOnClickListener(this);
         mScanWareh.setOnClickListener(this);
         mBtnSubmit.setOnClickListener(this);
     }
@@ -114,7 +107,7 @@ public class BoxRecoverFragment extends Fragment implements View.OnClickListener
                 mWarehCode.requestFocus();//焦点设置到它
                 startActivity(new Intent(getActivity(), ScanActivity.class).putExtra(Config.START_SCAN, Config.ONCE_SCAN));
                 break;
-            case R.id.btn_submit://分拣包装完毕,
+            case R.id.btn_submit://盒子盘点完毕,
                 submitData();//提交数据到服务器
                 break;
         }
@@ -135,7 +128,7 @@ public class BoxRecoverFragment extends Fragment implements View.OnClickListener
         }
         String warehCode = mWarehCode.getText().toString();
         if (TextUtils.isEmpty(warehCode)) {
-            Toast.makeText(getActivity(), "网点编号不能为空", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "仓库编号不能为空", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -149,39 +142,6 @@ public class BoxRecoverFragment extends Fragment implements View.OnClickListener
             info.setUSER_CODE(userCode);
             submitData.add(info);
         }
-        HttpUtil.getInstance().recoverBox(submitData, new HttpUtil.SuccessCallback() {
-            @Override
-            public void onSuccess(String str) {
-                pd.dismiss();//取消进度条
-                Type type = new TypeToken<ResponseInfo<String>>() {
-                }.getType();
-                ResponseInfo result = new Gson().fromJson(str, type);
-                if (result == null) {
-                    Toast.makeText(getActivity(), str, Toast.LENGTH_SHORT).show();
-                } else if (result != null && !result.getStatus().equals(Config.STATUS_SUCCESS)) {
-                    Toast.makeText(getActivity(), result.getDescription(), Toast.LENGTH_SHORT).show();//错误原因显示出来
-                } else {
-                    Toast.makeText(getActivity(), "数据提交成功", Toast.LENGTH_SHORT).show();
-                    //提交成功清空界面数据
-                    clearCurrentData();
-                }
-            }
-        }, new HttpUtil.FailCallback() {
-            @Override
-            public void onFail(String failMsg) {
-                pd.dismiss();//取消进度条
-                Toast.makeText(getActivity(), "提交数据异常：" + failMsg, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    /**
-     * 清空界面中的数据
-     */
-    private void clearCurrentData() {
-        mAdapter.clearAllData();
-        mBoxCode.setText("");
-        mWarehCode.setText("");
     }
 
     private BoxProdAdapter.OnItemClickListener mOnItemClickListener = new BoxProdAdapter.OnItemClickListener() {
@@ -261,5 +221,17 @@ public class BoxRecoverFragment extends Fragment implements View.OnClickListener
         SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         return sDateFormat.format(new java.util.Date());
     }
+
+    /**
+     * 清空界面中的数据
+     */
+    private void clearCurrentData() {
+        mAdapter.clearAllData();
+        mBoxCode.setText("");
+        mWarehCode.setText("");
+    }
+
+
+
 
 }

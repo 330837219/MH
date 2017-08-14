@@ -33,6 +33,11 @@ public class BoxProdAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             ItemViewHolder viewHolder = new ItemViewHolder(view);
             return viewHolder;
         }
+        else  if(mSwitchFragment == 2){
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.prod_item, parent, false);
+            ItemViewHolder viewHolder = new ItemViewHolder(view);
+            return viewHolder;
+        }
         //其他列表显示的列为：行号，盒子编码，扫描时间
         else {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.box_item, parent, false);
